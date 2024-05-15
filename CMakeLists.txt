@@ -5,6 +5,8 @@ project(Tester LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(lib)
+
 file(GLOB HPP_FILES include/*.hpp)
 file(GLOB CPP_FILES src/*.cpp)
 
@@ -16,4 +18,5 @@ add_library(${PROJECT_NAME} SHARED
 add_executable(${PROJECT_NAME}_simple_app main.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_link_libraries(${PROJECT_NAME} PUBLIC Logger)
 target_link_libraries(${PROJECT_NAME}_simple_app ${PROJECT_NAME})

@@ -1,9 +1,10 @@
 #include "test.hpp"
 
 #include <exception>
+#include <string>
 
 void Test::run() const {
-    std::cout << "Running test for: " << name << std::endl;
+    logger->log("Running test for: " + name);
     testFunction();
 }
 
@@ -17,24 +18,22 @@ void Tester::addTestCase(const std::string& expected, const std::string& output)
 
 Tester::~Tester() {
     if (!tests.empty()) {
-        std::cout << "Running tests" << std::endl;
+        logger->log("Running tests");
         for (const auto& test : tests) {
             try {
                 test.run();
-                std::cout << "Test \"" << test.getName() << "\" is successful" << std::endl
-                          << std::endl;
+                logger->log("Test \"" + test.getName() + "\" is successful\n");
             } catch (const std::exception& e) {
-                std::cerr << "Test \"" << test.getName() << "\" failed: " << e.what() << std::endl
-                          << std::endl;
+                logger->log("Test \"" + test.getName() + "\" failed: " + e.what() + "\n");
             }
         }
     }
 
     if (!testCases.empty()) {
-        std::cout << "Running test cases" << std::endl;
+        logger->log("Running test cases");
         for (std::size_t c = 0; c < testCases.size(); c++) {
             testCases.at(c).run();
-            std::cout << "Test case " << c + 1 << " is successful" << std::endl;
+            logger->log("Test case " + std::to_string(c + 1) + " is successful");
         }
     }
 }

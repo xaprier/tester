@@ -47,10 +47,10 @@ You can run the sample program with this command
 
 You can use this project as an library to link your project with CMake.
 
-- Clone the repository to any place where you put libs.
+- Add the repository to any place where you put libs as an git submodule.
 
 ```sh
-git clone https://github.com/xaprier/tester.git lib/tester # if you have lib directory in your project for an example
+git submodule add https://github.com/xaprier/tester.git lib/tester # if you have lib directory in your project for an example
 ```
 
 - Add the project directory to your CMake project

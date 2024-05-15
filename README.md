@@ -15,7 +15,7 @@
 Clone the repository to your directory
 
 ```sh
-git clone https://github.com/xaprier/tester.git
+git clone --recurse-submodules https://github.com/xaprier/tester.git
 ```
 
 Enter the direcotry of the source code

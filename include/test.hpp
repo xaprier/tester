@@ -15,11 +15,24 @@ class Test {
         : name(std::move(name)), testFunction(std::move(testFunction)), logger(new Logger(LoggingLevel::TESTING, "testing.txt", false, true)) {}
     ~Test() = default;
 
-    // Disable
     Test(const Test &&o) noexcept : name(std::move(o.name)), testFunction(std::move(o.testFunction)) {}  // Move constructor
     Test(const Test &o) : name(std::move(o.name)), testFunction(std::move(o.testFunction)) {}            // Copy constructor
-    Test &operator=(Test &&) = delete;                                                                   // Move assignment operator
-    Test &operator=(Test &) = delete;                                                                    // Copy assignment operator
+    Test &operator=(Test &&o) noexcept {
+        if (this != &o) {
+            name = std::move(o.name);
+            testFunction = std::move(o.testFunction);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
+    Test &operator=(const Test &o) {
+        if (this != &o) {
+            name = std::move(o.name);
+            testFunction = std::move(o.testFunction);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
 
     void run() const;
     [[nodiscard]] std::string getName() const { return name; }
@@ -36,16 +49,29 @@ class TestCase {
         : expected(std::move(expected)), output(std::move(output)), logger(new Logger(LoggingLevel::TESTING, "test.txt", false, true)) {}
     ~TestCase() = default;
 
-    // Disable
-    TestCase(const TestCase &&) = delete;       // Move constructor
-    TestCase(const TestCase &) = delete;        // Copy constructor
-    TestCase &operator=(TestCase &&) = delete;  // Move assignment operator
-    TestCase &operator=(TestCase &) = delete;   // Copy assignment operator
+    TestCase(const TestCase &&o) noexcept : expected(std::move(o.expected)), output(std::move(o.output)) {}  // Move constructor
+    TestCase(const TestCase &o) : expected(std::move(o.expected)), output(std::move(o.output)) {}            // Copy constructor
+    TestCase &operator=(TestCase &&o) noexcept {
+        if (this != &o) {
+            expected = std::move(o.expected);
+            output = std::move(o.output);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
+    TestCase &operator=(const TestCase &o) {
+        if (this != &o) {
+            expected = std::move(o.expected);
+            output = std::move(o.output);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
 
     void run() const {
         if (expected != output) {
-            const std::string logText = "Expected: " + expected +
-                                        "\nOutput: " + output;
+            const std::string logText = "Expected: \"" + expected +
+                                        "\", Output: \"" + output + "\"";
             this->logger->log(logText);
             assert(expected == output);
         }
@@ -63,11 +89,24 @@ class Tester {
     Tester() : logger(new Logger(LoggingLevel::TESTING, "testing.txt", false, true)) {}
     ~Tester();
 
-    // Disable
-    Tester(const Tester &&) = delete;       // Move constructor
-    Tester(const Tester &) = delete;        // Copy constructor
-    Tester &operator=(Tester &&) = delete;  // Move assignment operator
-    Tester &operator=(Tester &) = delete;   // Copy assignment operator
+    Tester(const Tester &&o) noexcept : tests(std::move(o.tests)), testCases(std::move(o.testCases)) {}  // Move constructor
+    Tester(const Tester &o) : tests(std::move(o.tests)), testCases(std::move(o.testCases)) {}            // Copy constructor
+    Tester &operator=(Tester &&o) noexcept {
+        if (this != &o) {
+            tests = std::move(o.tests);
+            testCases = std::move(o.testCases);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
+    Tester &operator=(const Tester &o) {
+        if (this != &o) {
+            tests = std::move(o.tests);
+            testCases = std::move(o.testCases);
+            logger.reset(new Logger(*o.logger));
+        }
+        return *this;
+    }
 
     void addTest(const std::string &name, std::function<void()> testFunction);
     void addTestCase(const std::string &expected, const std::string &output);

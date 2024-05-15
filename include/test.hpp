@@ -21,7 +21,7 @@ class Test {
         if (this != &o) {
             name = std::move(o.name);
             testFunction = std::move(o.testFunction);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }
@@ -29,7 +29,7 @@ class Test {
         if (this != &o) {
             name = std::move(o.name);
             testFunction = std::move(o.testFunction);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }
@@ -55,7 +55,7 @@ class TestCase {
         if (this != &o) {
             expected = std::move(o.expected);
             output = std::move(o.output);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }
@@ -63,7 +63,7 @@ class TestCase {
         if (this != &o) {
             expected = std::move(o.expected);
             output = std::move(o.output);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }
@@ -95,7 +95,7 @@ class Tester {
         if (this != &o) {
             tests = std::move(o.tests);
             testCases = std::move(o.testCases);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }
@@ -103,7 +103,7 @@ class Tester {
         if (this != &o) {
             tests = std::move(o.tests);
             testCases = std::move(o.testCases);
-            logger.reset(new Logger(*o.logger));
+            logger.reset(new Logger(*o.logger));  // NOLINT
         }
         return *this;
     }

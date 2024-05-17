@@ -8,6 +8,15 @@ void Test::run() const {
     testFunction();
 }
 
+void TestCase::run() const {
+    if (expected != output) {
+        const std::string logText = "Expected: \"" + expected +
+                                    "\", Output: \"" + output + "\"";
+        this->logger->log(logText);
+        assert(expected == output);
+    }
+}
+
 void Tester::addTest(const std::string& name, std::function<void()> testFunction) {
     tests.emplace_back(name, testFunction);
 }

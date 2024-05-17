@@ -11,24 +11,24 @@
 class Test {
   public:
     Test(std::string name, std::function<void()> testFunction)
-        : name(std::move(name)), testFunction(std::move(testFunction)), logger(new Logger(LoggingLevel::TESTING, "testing.txt", false, true)) {}
+        : name(std::move(name)), testFunction(std::move(testFunction)), logger(std::make_shared<Logger>(LoggingLevel::TESTING, "testing.txt", false, true)) {}
     ~Test() = default;
 
-    Test(const Test &&o) noexcept : name(std::move(o.name)), testFunction(std::move(o.testFunction)) {}  // Move constructor
-    Test(const Test &o) : name(std::move(o.name)), testFunction(std::move(o.testFunction)) {}            // Copy constructor
+    Test(const Test &&o) noexcept : name(std::move(o.name)), testFunction(std::move(o.testFunction)), logger(std::move(o.logger)) {}  // Move constructor
+    Test(const Test &o) : name(o.name), testFunction(o.testFunction), logger(o.logger) {}                                             // Copy constructor
     Test &operator=(Test &&o) noexcept {
         if (this != &o) {
             name = std::move(o.name);
             testFunction = std::move(o.testFunction);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            logger = std::move(o.logger);
         }
         return *this;
     }
     Test &operator=(const Test &o) {
         if (this != &o) {
-            name = std::move(o.name);
-            testFunction = std::move(o.testFunction);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            name = o.name;
+            testFunction = o.testFunction;
+            logger = o.logger;
         }
         return *this;
     }
@@ -39,70 +39,63 @@ class Test {
   private:
     std::string name;
     std::function<void()> testFunction;
-    std::unique_ptr<Logger> logger;
+    std::shared_ptr<Logger> logger;
 };
 
 class TestCase {
   public:
     TestCase(std::string expected, std::string output)
-        : expected(std::move(expected)), output(std::move(output)), logger(new Logger(LoggingLevel::TESTING, "test.txt", false, true)) {}
+        : expected(std::move(expected)), output(std::move(output)), logger(std::make_shared<Logger>(LoggingLevel::TESTING, "test.txt", false, true)) {}
     ~TestCase() = default;
 
-    TestCase(const TestCase &&o) noexcept : expected(std::move(o.expected)), output(std::move(o.output)) {}  // Move constructor
-    TestCase(const TestCase &o) : expected(std::move(o.expected)), output(std::move(o.output)) {}            // Copy constructor
+    TestCase(const TestCase &&o) noexcept : expected(std::move(o.expected)), output(std::move(o.output)), logger(std::move(o.logger)) {}  // Move constructor
+    TestCase(const TestCase &o) : expected(o.expected), output(o.output), logger(o.logger) {}                                             // Copy constructor
     TestCase &operator=(TestCase &&o) noexcept {
         if (this != &o) {
             expected = std::move(o.expected);
             output = std::move(o.output);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            logger = std::move(o.logger);
         }
         return *this;
     }
     TestCase &operator=(const TestCase &o) {
         if (this != &o) {
-            expected = std::move(o.expected);
-            output = std::move(o.output);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            expected = o.expected;
+            output = o.output;
+            logger = o.logger;
         }
         return *this;
     }
 
-    void run() const {
-        if (expected != output) {
-            const std::string logText = "Expected: \"" + expected +
-                                        "\", Output: \"" + output + "\"";
-            this->logger->log(logText);
-            assert(expected == output);
-        }
-    }
+    void run() const;
 
   private:
     std::string expected;
     std::string output;
-    std::unique_ptr<Logger> logger;
+    std::shared_ptr<Logger> logger;
 };
 
 class Tester {
   public:
     // Default constructor
-    Tester() : logger(new Logger(LoggingLevel::TESTING, "testing.txt", false, true)) {}
+    Tester() : logger(std::make_shared<Logger>(LoggingLevel::TESTING, "testing.txt", false, true)) {}
     ~Tester();
 
-    Tester(const Tester &&o) noexcept : tests(std::move(o.tests)), testCases(std::move(o.testCases)) {}  // Move constructor
-    Tester(const Tester &o) : tests(std::move(o.tests)), testCases(std::move(o.testCases)) {}            // Copy constructor
+    Tester(const Tester &&o) noexcept : tests(std::move(o.tests)), testCases(std::move(o.testCases)), logger(std::move(o.logger)) {}  // Move constructor
+    Tester(const Tester &o) : tests(o.tests), testCases(o.testCases), logger(o.logger) {}                                             // Copy constructor
     Tester &operator=(Tester &&o) noexcept {
         if (this != &o) {
             tests = std::move(o.tests);
             testCases = std::move(o.testCases);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            logger = std::move(o.logger);
         }
         return *this;
     }
     Tester &operator=(const Tester &o) {
         if (this != &o) {
-            tests = std::move(o.tests);
-            testCases = std::move(o.testCases);
-            logger.reset(new Logger(*o.logger));  // NOLINT
+            tests = o.tests;
+            testCases = o.testCases;
+            logger = o.logger;
         }
         return *this;
     }
@@ -113,7 +106,7 @@ class Tester {
   private:
     std::vector<Test> tests;
     std::vector<TestCase> testCases;
-    std::unique_ptr<Logger> logger;
+    std::shared_ptr<Logger> logger;
 };
 
 #endif  // TEST_HPP
